@@ -1,19 +1,15 @@
 package org.ormi.priv.tfa.orderflow.product.registry.aggregate.repository.model;
 
 /**
-     * Event entity for a product which is removed
-     */
+ * Event entity for a product which is removed
+ */
 public class ProductRemovedEventEntity extends ProductRegistryEventEntity {
   static final String EVENT_TYPE = "ProductRemoved";
 
   /**
    * Payload for the event.
    */
-  public static class Payload {
-    /**
-     * The id of the product.
-     */
-    public String productId;
+  public static record Payload(String productId) {
   }
 
   /**
@@ -25,5 +21,4 @@ public class ProductRemovedEventEntity extends ProductRegistryEventEntity {
   public String getEventType() {
     return EVENT_TYPE;
   }
-  
 }
