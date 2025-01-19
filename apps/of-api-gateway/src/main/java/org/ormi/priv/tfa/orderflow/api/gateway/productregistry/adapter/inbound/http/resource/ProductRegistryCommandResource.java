@@ -31,6 +31,10 @@ import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.event.ProductRegistryEv
 import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.event.ProductRemoved;
 import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.event.ProductUpdated;
 import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.event.config.ProductRegistryEventChannelName;
+import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.query.config.ProductRegistryQueryChannelName;
+import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.message.ProductRegistryMessage;
+import org.ormi.priv.tfa.orderflow.lib.shared.StreamAbstract;
+
 
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Multi;
@@ -63,6 +67,9 @@ public class ProductRegistryCommandResource {
   @Inject
   @Channel("product-registry-command")
   Emitter<ProductRegistryCommand> commandEmitter;
+
+  @ConfigProperty(name = "event.timeout", defaultValue = "10")
+  int timeout;
 
   /**
    * Endpoint to register a product.
@@ -104,7 +111,7 @@ public class ProductRegistryCommandResource {
     // Create a stream of product registry events
     return Multi.createFrom().emitter(em -> {
       // Create consumer for product registry events with the given correlation id
-      final Consumer<ProductRegistryEvent> consumer = getEventsConsumerByCorrelationId(correlationId);
+      final Consumer<ProductRegistryMessage> consumer = getEventsConsumerByCorrelationId(correlationId);
       // Close the consumer on termination
       em.onTermination(() -> {
         try {
@@ -115,36 +122,7 @@ public class ProductRegistryCommandResource {
       });
       // Consume events and emit DTOs
       CompletableFuture.runAsync(() -> {
-        while(!em.isCancelled()) {
-          try {
-            final var timeout = 10000;
-            final var msg = Optional.ofNullable(consumer.receive(timeout, TimeUnit.MILLISECONDS));
-            if (msg.isEmpty()) {
-              // Complete the emitter if no event is received within the timeout. Free up resources.
-              Log.debug("No event received within timeout of " + timeout + " seconds.");
-              em.complete();
-            }
-            final ProductRegistryEvent evt = msg.get().getValue();
-            Log.debug("Received event: " + evt);
-            // Map event to DTO
-            if (evt instanceof ProductRegistered registered) {
-              Log.debug("Emitting DTO for registered event: " + registered);
-              // Emit DTO for registered event
-              em.emit(ProductRegistryEventDtoMapper.INSTANCE.toDto(registered));
-            } else {
-              // Fail the stream on unexpected event types
-              Throwable error = new ProductRegistryEventStreamException("Unexpected event type: " + evt.getClass().getName());
-              em.fail(error);
-              return;
-            }
-            // Acknowledge the message
-            consumer.acknowledge(msg.get());
-          } catch (PulsarClientException e) {
-            Log.error("Failed to receive event from consumer.", e);
-            em.fail(e);
-            return;
-          }
-        }
+        StreamAbstract.consumeEventStream(timeout, consumer, em);
       });
     });
   }
@@ -323,14 +301,16 @@ public class ProductRegistryCommandResource {
    * @param correlationId - correlation id to use for the consumer
    * @return Consumer for product registry events
    */
-  private Consumer<ProductRegistryEvent> getEventsConsumerByCorrelationId(String correlationId) {
+
+  // changer pour que ça renvoie un ProductRegistryMessage
+  private Consumer<ProductRegistryMessage> getEventsConsumerByCorrelationId(String correlationId) {
     try {
       // Define the channel name, topic and schema for the consumer
-      final String channelName = ProductRegistryEventChannelName.PRODUCT_REGISTRY_EVENT.toString();
+      final String channelName = ProductRegistryQueryChannelName.PRODUCT_REGISTRY_READ_RESULT.toString(); // changement pour pointer vers le coté lecture
       final String topic = channelName + "-" + correlationId;
       // Create and return the subscription (consumer)
       return pulsarClients.getClient(channelName)
-          .newConsumer(Schema.JSON(ProductRegistryEvent.class))
+          .newConsumer(Schema.JSON(ProductRegistryMessage.class))
           .subscriptionName(topic)
           .topic(topic)
           .subscribe();

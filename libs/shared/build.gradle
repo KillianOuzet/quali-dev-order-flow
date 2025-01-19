@@ -10,27 +10,10 @@ repositories {
 }
 
 dependencies {
-    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
-    implementation 'io.quarkus:quarkus-arc'
-    implementation 'io.quarkus:quarkus-rest-jackson'
-    implementation 'io.quarkus:quarkus-hibernate-validator'
-    implementation 'io.quarkus:quarkus-messaging-pulsar'
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
-    implementation project(':libs-event-sourcing')
-    implementation project(':libs-published-language')
-
-    // SmallRye OpenAPI
-    implementation 'io.quarkus:quarkus-smallrye-openapi'
-
-    // shared library
-    implementation project(':libs/shared')
 
     // MapStruct build-time annotation processor
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-
-    testImplementation 'io.quarkus:quarkus-junit5'
-    testImplementation 'io.quarkus:quarkus-junit5-mockito'
-    testImplementation 'io.quarkus:quarkus-jacoco'
 
     testImplementation("${junitJupiterGroupId}:${junitJupiterArtifactId}:${junitJupiterVersion}")
     testImplementation("org.mockito:mockito-core:${mockitoVersion}")
@@ -38,7 +21,7 @@ dependencies {
     testRuntimeOnly("${junitJupiterGroupId}:${junitJupiterArtifactId}-engine:${junitJupiterVersion}")
 }
 
-group 'org.ormi.priv.tfa.orderflow'
+group 'org.ormi.priv.tfa.shared'
 version '1.0.0-SNAPSHOT'
 
 java {
