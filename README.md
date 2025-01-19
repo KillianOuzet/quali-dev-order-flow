@@ -78,19 +78,19 @@ The stock is a list of products that are available for ordering. Each entry incl
 
 [Go to index](./doc/index.md)
 
-##Tâche 0 - Mise en place de l'environement de travail :
+## Tâche 0 - Mise en place de l'environement de travail :
 
 - Création d'une version realese 0.1.0 du code
 - Applications des règles de contribution gitflow
 
-##Tâche 1 - Amélioration de la gestion des erreurs asynchrones :
+## Tâche 1 - Amélioration de la gestion des erreurs asynchrones :
 
 - Création de la classe ProductRegistryError pour les erreurs de traitement
 - Ajout de l'interface pour les messages de canal
 - Intégration de ProductRegistryEvent et de ProductRegistryError dans les messages
 - Mise à jour des mappages JSON pour mettre la nouvelle classe d'erreur
 
-##Tâche 2 - Refonte du flux d'événements :
+## Tâche 2 - Refonte du flux d'événements :
 
 - Suppression de l'émission d'événements côté écriture
 - Modification de l'API Gateway pour interroger le côté lecture
@@ -100,7 +100,7 @@ The stock is a list of products that are available for ordering. Each entry incl
 - Création d'un nouveau projet gradle libs/shared pour le code commun
 - Refactorisation du point de terminaison de lecture
 
-##Tâche 3 - Gestion des modifications :
+## Tâche 3 - Gestion des modifications :
 
 - Création des branches distinctes pour chaque fonctionnalité
 - Historique Git propre
