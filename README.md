@@ -78,7 +78,44 @@ The stock is a list of products that are available for ordering. Each entry incl
 
 [Go to index](./doc/index.md)
 
-TODO
+## Tâche 0 - Mise en place de l'environement de travail :
+
+- Création d'une version realese 0.1.0 du code
+- Applications des règles de contribution gitflow
+
+## Tâche 1 - Amélioration de la gestion des erreurs asynchrones :
+
+- Création de la classe ProductRegistryError pour les erreurs de traitement
+- Ajout de l'interface pour les messages de canal
+- Intégration de ProductRegistryEvent et de ProductRegistryError dans les messages
+- Mise à jour des mappages JSON pour mettre la nouvelle classe d'erreur
+
+## Tâche 2 - Refonte du flux d'événements :
+
+- Suppression de l'émission d'événements côté écriture
+- Modification de l'API Gateway pour interroger le côté lecture
+- Adaptation de l'Emitter pour transmettre l'ID de corrélation au service de lecture
+- Déplacement de la logique de ProductRegistryEventEmitter vers un microservice de lecture
+- Ajout de la configuration pour le délai d'attente dans l'API Gateway
+- Création d'un nouveau projet gradle libs/shared pour le code commun
+- Refactorisation du point de terminaison de lecture
+
+## Tâche 3 - Gestion des modifications :
+
+- Création des branches distinctes pour chaque fonctionnalité
+- Historique Git propre
+- Descriptions claires pour les merge requests
+
+**Ces modifications visent à améliorer :**
+
+- La robustesse du système
+- La séparation des responsabilités
+- La maintenabilité du code 
+- Et la documentation et la compréhension du système
+
+[diagramme de séquence](./doc/DiagrammeSequence.jpg)
+
+![diagramme de séquence](./doc/DiagrammeSequence.jpg)
 
 ## Installation
 

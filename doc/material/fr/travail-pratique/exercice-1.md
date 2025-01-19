@@ -16,13 +16,35 @@ L'application Order flow est un ensemble de microservices qui doivent implément
 
 *astuce* : Consultez les fichiers de cartographie de contexte dans le dossier `doc`.
 
+```
+Les principaux domaines métiers sont : 
+
+- OnlineShoppingDomain
+- StockDomain
+- CustomerDomain
+- ShoppingCartDomain
+- OrderProcessingDomain
+```
+
 2. Comment les microservices sont-ils conçus pour implémenter les domaines métiers ?
 
 *astuce* : Consultez l'architecture des microservices et les noms des packages dans les dossiers `apps` et `libs`.
 
+```
+Chaque microservice est comme une application en lui même avec la même architecture src, les fichiers ignore et les fichiers build.
+```
+
 3. Quelles sont les responsabilités des conteneurs de code `apps/of-api-gateway`, `apps/of-product-registry-microservices/product.registry`, `apps/of-product-registry-microservices/product.registry.read`, `libs/event-sourcing`, `libs/published-language` ?
 
 *astuce* : Vous pouvez observer les fichiers de cartographie de contexte dans le dossier `doc` ainsi qu'interpréter le code dans les dossiers `apps` et `libs`.
+
+```
+- le microservice api-gateway permet de centraliser les requêtes  
+- le microservice product.registry s'occupe l'écriture des données
+- le microservice product.registry.read s'occupe de la lecture des données
+- libs/event-sourcing permet de garder en mémoire les évênements, ce qui permet d'être plus flexible sur les évènement et de faire des rollback si besoin par exemple
+- libs/published-language contient l'explication des contexts
+```
 
 ## Tâche 2 : Identifier les concepts principaux
 
@@ -34,6 +56,11 @@ Vous devez identifier les concepts principaux utilisés dans l'application Order
 
 1. Quels sont les concepts principaux utilisés dans l'application Order flow ?
 
+```
+Ségrégation
+la matérialisation du métier
+```
+
 2. Comment les concepts principaux sont-ils implémentés dans les microservices ?
 
 ::: astuce
@@ -44,6 +71,10 @@ Identifiez les "parties mobiles" de l'application, telles que la sémantique des
 Cette question nécessite de faire des recherches et de comprendre la structure du code.
 Cependant, vous pouvez également vous appuyer sur la [présentation du projet](../presentation-projet) pour vous aider à clarifier les sujets de la question.
 :::
+
+```
+Grâce à Gradle qui est un gestionnaire de dépendance
+```
 
 3. Que fait la bibliothèque `libs/event-sourcing` ? Comment est-elle utilisée dans les microservices (relation entre métier et structure du code) ?
 
@@ -70,3 +101,14 @@ Vous pouvez appeler le professeur si vous avez besoin d'aide pour identifier les
 Vous pouvez ajuster la configuration de SonarLint pour correspondre aux standards de codage du projet (par exemple, indentation, conventions de nommage, etc.). Le dépôt du projet repose sur Quarkus et cela implique certains standards de codage spécifiques.
 Faites également attention à traiter tous les problèmes signalés par SonarLint, même s'ils ne sont pas directement liés à la qualité du code (une explication peut être suffisante dans certains cas).
 :::
+
+```
+Class variable fields should not have public accessibility (java:S1104)  
+-> Certaines classes ont leurs attributs en public, or il est préférable que les attributs de classe soit privé, ou alors que ça soit des constante static
+
+Cognitive Complexity of methods should not be too high (java:S3776)  
+-> Des méthodes sont trop longues et font beaucoup de chose qui pourrait être séparé en plusieurs méthodes afin d'améliorer la lisibilité et la compréhension du code
+
+Generic exceptions should never be thrown (java:S112)  
+-> Throw des exceptions généric n'est pas une bonne pratique car trop général et n'aide pas à la compréhension d'une erreur. Il faut donc choisir une exception adéquate.
+```
