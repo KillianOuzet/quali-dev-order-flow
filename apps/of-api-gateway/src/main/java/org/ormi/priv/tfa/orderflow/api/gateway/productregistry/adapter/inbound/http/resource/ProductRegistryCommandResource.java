@@ -33,6 +33,7 @@ import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.event.ProductUpdated;
 import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.event.config.ProductRegistryEventChannelName;
 import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.query.config.ProductRegistryQueryChannelName;
 import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.message.ProductRegistryMessage;
+import org.ormi.priv.tfa.orderflow.lib.shared.StreamAbstract;
 
 
 import io.quarkus.logging.Log;
@@ -66,6 +67,9 @@ public class ProductRegistryCommandResource {
   @Inject
   @Channel("product-registry-command")
   Emitter<ProductRegistryCommand> commandEmitter;
+
+  @ConfigProperty(name = "event.timeout", defaultValue = "10")
+  int timeout;
 
   /**
    * Endpoint to register a product.
@@ -118,39 +122,7 @@ public class ProductRegistryCommandResource {
       });
       // Consume events and emit DTOs
       CompletableFuture.runAsync(() -> {
-        while(!em.isCancelled()) {
-          try {
-            final var timeout = 10000;
-            final var msg = Optional.ofNullable(consumer.receive(timeout, TimeUnit.MILLISECONDS));
-            if (msg.isEmpty()) {
-              // Complete the emitter if no event is received within the timeout. Free up resources.
-              Log.debug("No event received within timeout of " + timeout + " seconds.");
-              em.complete();
-            }
-            if (msg.get().getValue() instanceof ProductRegistryError){
-              // Fail the stream on unexpected event types
-              Throwable error = new ProductRegistryEventStreamException("Unexpected event type: " + evt.getClass().getName());
-              em.fail(error);
-              return;
-            }
-
-            final ProductRegistryEvent evt = msg.get().getValue();
-              Log.debug("Received event: " + evt);
-              // Map event to DTO
-              if (evt instanceof ProductRegistered registered) {
-                Log.debug("Emitting DTO for registered event: " + registered);
-                // Emit DTO for registered event
-                em.emit(ProductRegistryEventDtoMapper.INSTANCE.toDto(registered));
-              }
-
-            // Acknowledge the message
-            consumer.acknowledge(msg.get());
-          } catch (PulsarClientException e) {
-            Log.error("Failed to receive event from consumer.", e);
-            em.fail(e);
-            return;
-          }
-        }
+        StreamAbstract.consumeEventStream(timeout, consumer, em);
       });
     });
   }
