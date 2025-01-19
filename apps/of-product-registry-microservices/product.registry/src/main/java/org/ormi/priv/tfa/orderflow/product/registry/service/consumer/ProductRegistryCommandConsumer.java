@@ -80,7 +80,7 @@ public class ProductRegistryCommandConsumer {
         .subscribeAsCompletionStage()
         .thenAccept(evt -> {
           // Produce event on correlated bus
-          eventProducer.sink(correlationId, evt);
+           //eventProducer.sink(correlationId, evt);
           Log.debug(String.format("Acknowledge command: %s", cmd.getClass().getName()));
           msg.ack();
         }).exceptionallyCompose(e -> {
