@@ -43,7 +43,7 @@ public final class ProductRegistered extends Event implements ProductRegistryEve
 
   /**
    * Constructor.
-   * 
+   *
    * @param id - The id of the event.
    * @param aggregateId - The id of the aggregate.
    * @param version - The version of the aggregate.
