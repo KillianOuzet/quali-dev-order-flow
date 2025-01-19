@@ -113,6 +113,10 @@ The stock is a list of products that are available for ordering. Each entry incl
 - La maintenabilité du code 
 - Et la documentation et la compréhension du système
 
+[diagramme de séquence](./doc/DiagrammeSequence.jpg)
+
+![diagramme de séquence](./doc/DiagrammeSequence.jpg)
+
 ## Installation
 
 TODO
